@@ -1,0 +1,9 @@
+{
+    "extends": "tslint:latest",
+    "rules": {
+        "max-line-length": [true, 100],
+        "ordered-imports": true,
+        "semicolon": [true, "always"],
+        "trailing-comma": [true, {"multiline": "always", "singleline": "never"}]
+    }
+}

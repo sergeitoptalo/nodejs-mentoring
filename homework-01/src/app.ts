@@ -1,6 +1,10 @@
 let a = () => {
-    let b = [1, 2, 3];
-    console.log('Running23457');
-}
+    const b = [1, 2, 3];
+};
+
+let o = {
+    1: 1,
+    2: 2,
+};
 
 a();
