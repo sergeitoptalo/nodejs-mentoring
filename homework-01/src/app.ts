@@ -1,10 +1,6 @@
-let a = () => {
-    const b = [1, 2, 3];
-};
+import appConfig from './config/appConfig.json';
+import User from './models/User';
+import Product from './models/Product';
 
-let o = {
-    1: 1,
-    2: 2,
-};
-
-a();
+const user = new User();
+const product = new Product();
