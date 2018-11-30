@@ -4,11 +4,11 @@
   "description": "",
   "main": "dist/app.js",
   "scripts": {
-    "lint": "tslint -c ./tslint.json 'src/**/*.ts'",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm-run-all --parallel build server",
     "server": "nodemon ./dist/app.js",
-    "build": "tsc --watch"
+    "build": "tsc --watch",
+    "lint": "tslint -c ./tslint.json 'src/**/*.ts'",
+    "test": ""
   },
   "author": "",
   "license": "ISC",
