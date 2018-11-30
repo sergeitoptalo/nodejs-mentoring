@@ -1,6 +1,7 @@
 import appConfig from './config/appConfig.json';
-import User from './models/User';
-import Product from './models/Product';
+var models = require('./models');
 
-const user = new User();
-const product = new Product();
+console.log(appConfig.name);
+
+const user = new models.User();
+const product = new models.Product();

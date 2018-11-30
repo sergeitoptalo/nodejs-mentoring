@@ -1,8 +1,9 @@
 "use strict";
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(require("./User"));
-__export(require("./Product"));
+const User_1 = __importDefault(require("../models/User"));
+const Product_1 = __importDefault(require("../models/Product"));
+module.exports = { User: User_1.default, Product: Product_1.default };
 //# sourceMappingURL=index.js.map
