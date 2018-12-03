@@ -1,5 +1,7 @@
 node_modules
+dist
 */node_modules
 *.bundle.js
 *.log
+*.map
 package-lock.json
