@@ -1,12 +1,14 @@
 import EventEmitter from 'events';
 import fs from 'fs';
-import { promisify } from 'util';
+import { compareStates } from './utilities/comparison';
 
 interface IDirWatcherState {
     path: string | null;
     delay: number;
-    dirState: string[];
-    filesState: any;
+    folderContent: {
+        fileNames: string[],
+        files: any[],
+    };
     initializing: boolean;
     timers: any;
 }
@@ -18,8 +20,10 @@ export default class DirWatcher extends EventEmitter {
         super();
         this.state = {
             delay: 0,
-            dirState: [],
-            filesState: [],
+            folderContent: {
+                fileNames: [],
+                files: [],
+            },
             initializing: false,
             path: null,
             timers: [],
@@ -30,16 +34,14 @@ export default class DirWatcher extends EventEmitter {
         this.init(path, delay)
             .then((data: any) => {
                 this.state.initializing = false;
-                console.log(this.state);
-                this.getNewState()
-                .then((newState) => this.detectStateChanges(this.state, newState));
+                // add timer
             })
             .catch((err: any) => {
                 console.log(err);
             });
     }
 
-    private init(path: string, delay: number) {
+    private async init(path: string, delay: number) {
         this.state.path = path;
         this.state.delay = delay;
         this.state.initializing = true;
@@ -54,7 +56,7 @@ export default class DirWatcher extends EventEmitter {
                     reject(err);
                 } else {
                     if (this.state.initializing) {
-                        this.state.dirState = data;
+                        this.state.folderContent.fileNames = data;
                     }
                     resolve(data);
                 }
@@ -62,18 +64,18 @@ export default class DirWatcher extends EventEmitter {
         });
     }
 
-    private readFiles(data: any) {
+    private readFiles(files: any) {
         const filePromises: any = [];
-        data.forEach((fileName: string) => {
+        files.forEach((fileName: string) => {
             filePromises.push(new Promise((resolve, reject) => {
                 fs.readFile(this.state.path + '/' + fileName, (err, fileContent) => {
                     if (err) {
                         reject(err);
                     } else {
                         if (this.state.initializing) {
-                            this.state.filesState.push(fileContent);
+                            this.state.folderContent.files.push(fileContent);
                         }
-                        resolve(data);
+                        resolve(fileContent);
                     }
                 });
             }));
@@ -104,7 +106,10 @@ export default class DirWatcher extends EventEmitter {
             });
     }
 
-    private detectStateChanges(previousState: any, newState: any) {
-        console.log('Changes detected');
+    private detectChanges() {
+        this.getNewState()
+        .then((newState) => {
+            compareStates(this.state.folderContent, newState);
+        });
     }
 }
