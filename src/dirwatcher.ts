@@ -7,10 +7,10 @@ interface IDirWatcherState {
     delay: number;
     folderContent: {
         fileNames: string[],
-        files: any[],
+        files: Buffer[],
     };
     initializing: boolean;
-    timers: any;
+    timers: WindowTimers[];
 }
 
 export default class DirWatcher extends EventEmitter {
@@ -68,7 +68,7 @@ export default class DirWatcher extends EventEmitter {
         const filePromises: any = [];
         files.forEach((fileName: string) => {
             filePromises.push(new Promise((resolve, reject) => {
-                fs.readFile(this.state.path + '/' + fileName, (err, fileContent) => {
+                fs.readFile(`${this.state.path}/${fileName}`, (err, fileContent) => {
                     if (err) {
                         reject(err);
                     } else {
