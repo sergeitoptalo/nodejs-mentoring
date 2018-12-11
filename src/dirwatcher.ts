@@ -7,7 +7,10 @@ interface IDirWatcherState {
     delay: number;
     folderContent: {
         fileNames: string[],
-        files: Buffer[],
+        files: Array<{
+            fileName: string,
+            fileContent: Buffer,
+        }>,
     };
     initializing: boolean;
     timers: WindowTimers[];
@@ -34,7 +37,10 @@ export default class DirWatcher extends EventEmitter {
         this.init(path, delay)
             .then((data: any) => {
                 this.state.initializing = false;
-                // add timer
+                setTimeout(() => {
+                    this.detectChanges();
+                }, 20000);
+
             })
             .catch((err: any) => {
                 console.log(err);
@@ -73,9 +79,15 @@ export default class DirWatcher extends EventEmitter {
                         reject(err);
                     } else {
                         if (this.state.initializing) {
-                            this.state.folderContent.files.push(fileContent);
+                            this.state.folderContent.files.push({
+                                fileContent,
+                                fileName,
+                            });
                         }
-                        resolve(fileContent);
+                        resolve({
+                            fileContent,
+                            fileName,
+                        });
                     }
                 });
             }));
@@ -88,28 +100,27 @@ export default class DirWatcher extends EventEmitter {
         let newDirState: any = [];
         let newFilesState: any = [];
 
-        return this.readDirectory()
-            .then((data: any) => {
-                newDirState = data;
-            })
-            .then((directoryContent) => {
-                this.readFiles(directoryContent)
-                    .then((files: any) => {
-                        newFilesState = files;
-                    });
-            })
-            .then(() => {
-                return {
-                    dirState: newDirState,
-                    filesState: newFilesState,
-                };
-            });
+        return this.readDirectory().then((data) => {
+            newDirState = data;
+            return this.readFiles(data);
+        })
+        .then((data) => {
+            newFilesState = data;
+            return {
+                fileNames: newDirState,
+                files: newFilesState,
+            };
+        });
+
     }
 
     private detectChanges() {
         this.getNewState()
-        .then((newState) => {
-            compareStates(this.state.folderContent, newState);
-        });
+            .then((newState) => {
+                const changes = compareStates(this.state.folderContent, newState);
+                if (changes) {
+                    console.log(changes);
+                }
+            });
     }
 }
