@@ -37,9 +37,9 @@ export default class DirWatcher extends EventEmitter {
         this.init(path, delay)
             .then((data: any) => {
                 this.state.initializing = false;
-                setTimeout(() => {
+                setInterval(() => {
                     this.detectChanges();
-                }, 20000);
+                }, 2000);
 
             })
             .catch((err: any) => {
@@ -104,13 +104,13 @@ export default class DirWatcher extends EventEmitter {
             newDirState = data;
             return this.readFiles(data);
         })
-        .then((data) => {
-            newFilesState = data;
-            return {
-                fileNames: newDirState,
-                files: newFilesState,
-            };
-        });
+            .then((data) => {
+                newFilesState = data;
+                return {
+                    fileNames: newDirState,
+                    files: newFilesState,
+                };
+            });
 
     }
 
@@ -118,7 +118,11 @@ export default class DirWatcher extends EventEmitter {
         this.getNewState()
             .then((newState) => {
                 const changes = compareStates(this.state.folderContent, newState);
-                if (changes) {
+                this.state = {
+                    ...this.state,
+                    folderContent: newState,
+                };
+                if (changes.length > 0) {
                     console.log(changes);
                 }
             });
