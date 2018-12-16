@@ -1,7 +1,9 @@
-export const compareStates = (previousState: any, nextState: any) => {
+import { IComparisonResult, IFileState, IFolderContent } from '../models/DirWatcherState';
+
+export const compareStates = (previousState: IFolderContent, nextState: IFolderContent) => {
     previousState = { ...previousState };
     nextState = { ...nextState };
-    const result = [];
+    const result: IComparisonResult[] = [];
     const previousFileNames = previousState.fileNames;
     const nextFileNames = nextState.fileNames;
 
@@ -9,9 +11,12 @@ export const compareStates = (previousState: any, nextState: any) => {
     if (previousFileNames.length > nextFileNames.length) {
         const deletedFileName = previousFileNames
             .filter((fileName: string) => nextFileNames.indexOf(fileName) === -1);
-        result.push({
-            fileName: deletedFileName,
-            status: 'removed',
+
+        deletedFileName.forEach((fileName: string) => {
+            result.push({
+                fileName,
+                status: 'removed',
+            });
         });
 
         previousState = {
@@ -19,7 +24,7 @@ export const compareStates = (previousState: any, nextState: any) => {
             fileNames: previousState.fileNames
                 .filter((fileName: string) => deletedFileName.indexOf(fileName) === -1),
             files: previousState.files
-                .filter((file: any) => deletedFileName.indexOf(file.fileName) === -1),
+                .filter((file: IFileState) => deletedFileName.indexOf(file.fileName) === -1),
         };
     }
 
@@ -27,9 +32,11 @@ export const compareStates = (previousState: any, nextState: any) => {
     if (previousFileNames.length < nextFileNames.length) {
         const addedFileName = nextFileNames
             .filter((fileName: string) => previousFileNames.indexOf(fileName) === -1);
-        result.push({
-            fileName: addedFileName,
-            status: 'added',
+        addedFileName.forEach((fileName: string) => {
+            result.push({
+                fileName,
+                status: 'added',
+            });
         });
 
         nextState = {
@@ -37,19 +44,21 @@ export const compareStates = (previousState: any, nextState: any) => {
             fileNames: nextState.fileNames
                 .filter((fileName: string) => addedFileName.indexOf(fileName) === -1),
             files: nextState.files
-                .filter((file: any) => addedFileName.indexOf(file.fileName) === -1),
+                .filter((file: IFileState) => addedFileName.indexOf(file.fileName) === -1),
         };
     }
 
-    const previousFiles = previousState.files.sort((a: any, b: any) => a.fileName > b.fileName);
-    const nextFiles = nextState.files.sort((a: any, b: any) => a.fileName > b.fileName);
+    const previousFiles = previousState.files.sort((a: any, b: any) => a.fileName - b.fileName);
+    const nextFiles = nextState.files.sort((a: any, b: any) => a.fileName - b.fileName);
 
     const modifiedFiles = previousFiles
-        .filter((file: any, index: number) =>
+        .filter((file: IFileState, index: number) =>
             Buffer.compare(file.fileContent, nextFiles[index].fileContent) !== 0);
 
     if (modifiedFiles.length > 0) {
-        result.push({ status: 'modified', files: modifiedFiles });
+        modifiedFiles.forEach((file: IFileState) => {
+            result.push({ fileName: file.fileName, status: 'modified' });
+        });
     }
 
     return result;
