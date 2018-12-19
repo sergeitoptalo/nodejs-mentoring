@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
 import fs from 'fs';
+import { promisify } from 'util';
 import { IDirWatcherState, IFileState } from './models/DirWatcherState';
 import { compareStates } from './utilities/stateComparison';
 
@@ -28,32 +29,25 @@ export default class DirWatcher extends EventEmitter {
     }
 
     private readDirectory() {
-        return new Promise((resolve, reject) => {
-            fs.readdir(this.state.path, (err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
+        const getFilesList = promisify(fs.readdir);
+        return getFilesList(this.state.path)
+            .then((filesList: string[]) => filesList)
+            .catch((error: string) => console.log(error));
     }
 
     private readFiles(fileNames: string[]) {
-        const filePromises: Array<Promise<IFileState>> = [];
+        const filePromises: any = [];
+        const getFilesContent = promisify(fs.readFile);
+
         fileNames.forEach((fileName: string) => {
-            filePromises.push(new Promise<IFileState>((resolve, reject) => {
-                fs.readFile(`${this.state.path}/${fileName}`, (err, fileContent) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve({
-                            fileContent,
-                            fileName,
-                        });
-                    }
-                });
-            }));
+            filePromises.push(
+                getFilesContent(`${this.state.path}/${fileName}`)
+                    .then((fileContent: Buffer) => ({
+                        fileContent,
+                        fileName,
+                    }))
+                    .catch((error) => console.log(error)),
+            );
         });
 
         return Promise.all(filePromises);
@@ -61,25 +55,26 @@ export default class DirWatcher extends EventEmitter {
 
     private getNewFolderState() {
         let newFolderState: string[] = [];
-        let newFilesState: IFileState[] = [];
+        let newFilesState = [];
 
-        return this.readDirectory().then((fileNames: string[]) => {
-            newFolderState = fileNames;
-            return this.readFiles(fileNames);
-        })
+        return this.readDirectory()
+            .then((fileList: string[]) => {
+                newFolderState = fileList;
+                return this.readFiles(fileList);
+            })
             .then((files) => {
                 newFilesState = files;
                 return {
                     fileNames: newFolderState,
                     files: newFilesState,
                 };
-            });
-
+            })
+            .catch((error) => console.log(error));
     }
 
     private detectChanges() {
         this.getNewFolderState()
-            .then((newFolderState) => {
+            .then((newFolderState: any) => {
                 const changes = compareStates(this.state.folderContent, newFolderState);
                 this.state = {
                     ...this.state,

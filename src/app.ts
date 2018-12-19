@@ -13,13 +13,13 @@ const importer = new Importer();
 watcher.watch('./src/data', 2000);
 watcher.on('changed', (importConfig) => {
     importer.import(importConfig)
-    .then((data) => {
-        data.forEach((file) => console.log(file));
-    });
+        .then((data) => {
+            data.forEach((file) => console.log(file));
+        })
+        .catch((error) => console.log(error));
 
-    /*const data = importer.import(importConfig).then((items: any) => {
-        items.forEach((item: any) => {
-            console.log(item);
-        });
-    })*/
+    /* --- Sync import ---
+    const data = importer.importSync(importConfig)
+    data.forEach((file) => console.log(file));
+    */
 });
