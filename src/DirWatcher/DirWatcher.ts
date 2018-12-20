@@ -81,7 +81,7 @@ export default class DirWatcher extends EventEmitter {
                     folderContent: newFolderState,
                 };
 
-                if (changes.length > 0) {
+                if (changes.length) {
                     this.emit('changed', {
                         changes,
                         path: this.state.path,

@@ -2,24 +2,10 @@ import csvjson from 'csvjson';
 import fs from 'fs';
 import { promisify } from 'util';
 import { IComparisonResult } from '../DirWatcher/models/DirWatcherState';
-
-interface IChanges {
-    fileName: string;
-    status: string;
-}
-
-interface IImportConfig {
-    path: string;
-    changes: IChanges[];
-}
-
-export interface IFolderChange {
-    fileName: string;
-    status: string;
-}
+import * as importerInterfaces from './models/ImporterState';
 
 export default class Importer {
-    public import(importConfig: IImportConfig) {
+    public import(importConfig: importerInterfaces.IImportConfig) {
         let filePromises: Array<Promise<IComparisonResult>> = [];
         const getFileContent = promisify(fs.readFile);
         filePromises = importConfig.changes.map((change: any) => {
@@ -43,7 +29,7 @@ export default class Importer {
         return Promise.all(filePromises);
     }
 
-    public importSync(importConfig: IImportConfig) {
+    public importSync(importConfig: importerInterfaces.IImportConfig) {
         const importResult = importConfig.changes.map((change: any) => {
             if (change.status !== 'removed') {
                 const fileData = fs.readFileSync(

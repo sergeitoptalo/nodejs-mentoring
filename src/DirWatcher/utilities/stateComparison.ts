@@ -1,3 +1,4 @@
+import { FileStatuses } from '../constants';
 import { IComparisonResult, IFileState, IFolderContent } from '../models/DirWatcherState';
 
 export const compareStates = (previousState: IFolderContent, nextState: IFolderContent) => {
@@ -12,7 +13,7 @@ export const compareStates = (previousState: IFolderContent, nextState: IFolderC
 
         result = deletedFileName.map((fileName: string) => ({
             fileName,
-            status: 'removed',
+            status: FileStatuses.removed,
         }));
 
         previousState = {
@@ -30,7 +31,7 @@ export const compareStates = (previousState: IFolderContent, nextState: IFolderC
             .filter((fileName: string) => !previousFileNames.includes(fileName));
         result = addedFileName.map((fileName: string) => ({
             fileName,
-            status: 'added',
+            status: FileStatuses.added,
         }));
 
         nextState = {
@@ -49,9 +50,12 @@ export const compareStates = (previousState: IFolderContent, nextState: IFolderC
         .filter((file: IFileState, index: number) =>
             Buffer.compare(file.fileContent, nextFiles[index].fileContent) !== 0);
 
-    if (modifiedFiles.length > 0) {
+    if (modifiedFiles.length) {
         result = modifiedFiles
-            .map((file: IFileState) => ({ fileName: file.fileName, status: 'modified' }));
+            .map((file: IFileState) => ({
+                fileName: file.fileName,
+                status: FileStatuses.modified,
+             }));
     }
 
     return result;
