@@ -8,7 +8,6 @@ export const optionsConfig = {
         shortcut: '-f',
     },
     help: {
-        full: '--help',
-        shortcut: '-h',
+        options: ['-h', '--h'],
     },
 };
