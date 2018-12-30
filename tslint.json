@@ -6,6 +6,7 @@
         "no-unused-expression": [true, "allow-new"],
         "ordered-imports": true,
         "quotemark": [true, "single", "jsx-double"],
+        "prefer-const": false,
         "semicolon": [true, "always"],
         "trailing-comma": [true, {"multiline": "always", "singleline": "never"}]
     }

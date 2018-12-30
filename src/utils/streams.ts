@@ -1,15 +1,19 @@
-import { optionsConfig } from './config/optionsConfig';
-
-const checkForHelpAction = (options: string[]) => {
-    const a = 0;
-};
+import Parser from './argumentsParser';
+import { config } from './config/optionsConfig';
 
 const parseParams = (argv: string[]) => {
-    const unparsedParams = argv.slice(2);
-    console.log(unparsedParams);
-    for (const param of unparsedParams) {
-        console.log(param);
-    }
+    return argv.slice(2);
 };
 
-parseParams(process.argv);
+let params = parseParams(process.argv);
+
+let args: any = new Parser(params).parseArguments();
+
+if (args.errors) {
+    console.log(args.errors.join(' '));
+} else {
+    console.log(config.action.handler[args.action](args.text));
+}
+if (args.showHelp) {
+    console.log('help');
+}
