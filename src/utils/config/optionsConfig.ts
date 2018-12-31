@@ -1,4 +1,6 @@
+import fs from 'fs';
 import through2 from 'through2';
+import Importer from '../../Importer/Importer';
 
 export const helpConfig = {
     option: '-h, --help',
@@ -14,6 +16,22 @@ interface IConfig {
 export const config: IConfig = {
     action: {
         handler: {
+            convertFromFile: (path: string) => {
+                const importer = new Importer();
+                const src = fs.createReadStream(path, { encoding: 'utf8' });
+                src.pipe(process.stdout);
+                src.on('data', (chunk) => {
+                    let transformedChunk = importer.convertToJSON(chunk);
+                    process.stdout.write(JSON.stringify(transformedChunk));
+                });
+                src.on('end', () => {
+                    process.stdout.end();
+                });
+            },
+            outputFile: (path: string) => {
+                const src = fs.createReadStream(path);
+                src.pipe(process.stdout);
+            },
             reverse: (str: string) => {
                 function tr(buffer: Buffer, a: any, next: any) {
                     this.push(buffer

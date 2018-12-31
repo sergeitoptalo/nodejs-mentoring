@@ -12,7 +12,7 @@ let args: any = new Parser(params).parseArguments();
 if (args.errors) {
     console.log(args.errors.join(' '));
 } else {
-    console.log(config.action.handler[args.action](args.text));
+    config.action.handler[args.action](args.text || args.file);
 }
 if (args.showHelp) {
     console.log('help');
