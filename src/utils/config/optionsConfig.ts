@@ -28,6 +28,25 @@ export const config: IConfig = {
                     process.stdout.end();
                 });
             },
+            convertToFile: (path: string) => {
+                const importer = new Importer();
+                const src = fs.createReadStream(path, { encoding: 'utf8' });
+                const writeStream = fs.createWriteStream('./src/data/output.json');
+
+                /* src.on('data', (chunk) => {
+                    let transformedChunk = importer.convertToJSON(chunk);
+                    writeStream.write(JSON.stringify(transformedChunk));
+                }); */
+                src.on('end', () => {
+                    console.log('Finished');
+                });
+                writeStream.on('data', (chunk) => {
+                    let transformedChunk = importer.convertToJSON(chunk);
+                    this.push(JSON.stringify(transformedChunk));
+                });
+                writeStream.on('finish', () => { console.log('Done'); });
+                // src.pipe(writeStream);
+            },
             outputFile: (path: string) => {
                 const src = fs.createReadStream(path);
                 src.pipe(process.stdout);
