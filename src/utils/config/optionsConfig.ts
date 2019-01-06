@@ -1,5 +1,6 @@
 import fs from 'fs';
 import through2 from 'through2';
+import { promisify } from 'util';
 import Importer from '../../Importer/Importer';
 
 export const helpConfig = {
@@ -47,6 +48,35 @@ export const config: IConfig = {
                 writeStream.on('finish', () => { console.log('Done'); });
                 // src.pipe(writeStream);
             },
+            cssBundler: (path: string) => {
+                const getCssFilesList = promisify(fs.readdir);
+                getCssFilesList(path)
+                    .then((filesList: string[]) => {
+                        const writable = fs.createWriteStream(`${path}/bundle.css`);
+                        filesList
+                            .filter((fileName: string) => fileName !== 'bundle.css')
+                            .forEach((fileName: string, index: number, array: string[]) => {
+                                const readable = fs.createReadStream(`${path}/${fileName}`);
+                                readable
+                                    .pipe(writable, { end: false });
+                                /* readable.on('data', (chunk) => {
+                                    writable.write(chunk);
+                                }); */
+                                readable.on('end', () => {
+                                    if (index === array.length - 1) {
+                                        const readAdditionalInfo = fs.createReadStream(
+                                            './src/utils/cssBundlerConfig/end.css',
+                                        );
+                                        readAdditionalInfo.pipe(writable);
+                                        readAdditionalInfo.on('end', () => {
+                                            writable.end();
+                                        });
+                                    }
+                                });
+                            });
+                    })
+                    .catch((error: string) => console.log(error));
+            },
             outputFile: (path: string) => {
                 const src = fs.createReadStream(path);
                 src.pipe(process.stdout);
@@ -78,5 +108,8 @@ export const config: IConfig = {
     },
     file: {
         option: '-f, --file',
+    },
+    path: {
+        option: '-p, --path',
     },
 };
