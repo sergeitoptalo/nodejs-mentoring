@@ -1,19 +1,18 @@
 import Parser from './argumentsParser';
 import { config } from './config/optionsConfig';
 
-const parseParams = (argv: string[]) => {
+const getArgs = (argv: string[]) => {
     return argv.slice(2);
 };
 
-let params = parseParams(process.argv);
-
-let args: any = new Parser(params).parseArguments();
+let args: any = new Parser(getArgs(process.argv)).parseArguments();
 
 if (args.errors) {
-    console.log(args.errors.join(' '));
+    console.log(args.errors.join('\n'));
+}
+
+if (args.showHelp) {
+    console.warn('help');
 } else {
     config.action.handler[args.action](args.text || args.file || args.path);
-}
-if (args.showHelp) {
-    console.log('help');
 }
