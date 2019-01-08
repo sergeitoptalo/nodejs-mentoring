@@ -1,7 +1,9 @@
+import chalk from 'chalk';
 import fs from 'fs';
-import through2 from 'through2';
+import through2, { TransformCallback } from 'through2';
 import { promisify } from 'util';
 import Importer from '../../Importer/Importer';
+import { cssBundler, errorMessages, messages } from './constants/index';
 
 export const helpConfig = {
     option: '-h, --help',
@@ -19,89 +21,124 @@ export const config: IConfig = {
         handler: {
             convertFromFile: (path: string) => {
                 const importer = new Importer();
-                const src = fs.createReadStream(path, { encoding: 'utf8' });
-                src.pipe(process.stdout);
-                src.on('data', (chunk) => {
-                    let transformedChunk = importer.convertToJSON(chunk);
-                    process.stdout.write(JSON.stringify(transformedChunk));
+                const readable = fs.createReadStream(path);
+
+                readable.on('data', (chunk) => {
+                    process.stdout.write(
+                        JSON.stringify(importer.convertToJSON(chunk.toString())),
+                    );
                 });
-                src.on('end', () => {
-                    process.stdout.end();
+
+                readable.on('end', () => {
+                    process.exit(1);
+                });
+
+                readable.on('error', () => {
+                    console.log(chalk.bgRed(errorMessages.noFileOrDir));
                 });
             },
             convertToFile: (path: string) => {
                 const importer = new Importer();
-                const src = fs.createReadStream(path, { encoding: 'utf8' });
-                const writeStream = fs.createWriteStream('./src/data/output.json');
+                const readable = fs.createReadStream(path, { encoding: 'utf8' });
+                const writable = fs.createWriteStream(
+                    path.substring(0, path.lastIndexOf('.')) + '.json',
+                );
 
-                /* src.on('data', (chunk) => {
+                readable.on('data', (chunk) => {
                     let transformedChunk = importer.convertToJSON(chunk);
-                    writeStream.write(JSON.stringify(transformedChunk));
-                }); */
-                src.on('end', () => {
-                    console.log('Finished');
+                    writable.write(JSON.stringify(transformedChunk));
                 });
-                writeStream.on('data', (chunk) => {
-                    let transformedChunk = importer.convertToJSON(chunk);
-                    this.push(JSON.stringify(transformedChunk));
+
+                readable.on('end', () => {
+                    writable.end();
                 });
-                writeStream.on('finish', () => { console.log('Done'); });
-                // src.pipe(writeStream);
+
+                readable.on('error', (error) => {
+                    console.log(error, errorMessages.noFileOrDir);
+                });
+
+                writable.on('finish', () => {
+                    console.log(chalk.bgGreen(messages.fileWasCreated));
+                });
             },
             cssBundler: (path: string) => {
                 const getCssFilesList = promisify(fs.readdir);
                 getCssFilesList(path)
                     .then((filesList: string[]) => {
-                        const writable = fs.createWriteStream(`${path}/bundle.css`);
+                        const writable = fs.createWriteStream(`${path}/${cssBundler.outputFile}`);
                         filesList
-                            .filter((fileName: string) => fileName !== 'bundle.css')
+                            .filter((fileName: string) => fileName !== cssBundler.outputFile)
                             .forEach((fileName: string, index: number, array: string[]) => {
                                 const readable = fs.createReadStream(`${path}/${fileName}`);
+
                                 readable
                                     .pipe(writable, { end: false });
-                                /* readable.on('data', (chunk) => {
-                                    writable.write(chunk);
-                                }); */
+
                                 readable.on('end', () => {
                                     if (index === array.length - 1) {
                                         const readAdditionalInfo = fs.createReadStream(
-                                            './src/utils/cssBundlerConfig/end.css',
+                                            cssBundler.fileEndPath,
                                         );
+
                                         readAdditionalInfo.pipe(writable);
+
                                         readAdditionalInfo.on('end', () => {
                                             writable.end();
+                                            console.log(
+                                                chalk.bgGreenBright(messages.bundleSuccess),
+                                            );
                                         });
                                     }
+                                });
+
+                                readable.on('error', (error) => {
+                                    console.log(chalk.bgRed(errorMessages.noFileOrDir));
                                 });
                             });
                     })
                     .catch((error: string) => console.log(error));
             },
             outputFile: (path: string) => {
-                const src = fs.createReadStream(path);
-                src.pipe(process.stdout);
+                const readable = fs.createReadStream(path);
+                readable.pipe(process.stdout);
+                readable.on('error', () => {
+                    console.log(errorMessages.noFileOrDir);
+                });
             },
             reverse: (str: string) => {
-                function tr(buffer: Buffer, a: any, next: any) {
-                    this.push(buffer
+                const reverseString = (buffer: (Buffer | string)) =>
+                    buffer
                         .toString()
                         .split('')
                         .reverse()
-                        .join(''));
+                        .join('');
+
+                function transformInput(chunk: Buffer, enc: string, next: TransformCallback) {
+                    this.push(reverseString(chunk) + '\n');
                     next();
                 }
 
-                process.stdin.pipe(through2(tr)).pipe(process.stdout);
+                if (str) {
+                    console.log(reverseString(str));
+                }
+
+                process.stdin
+                    .pipe(through2(transformInput))
+                    .pipe(process.stdout);
             },
             transform: (str: string) => {
                 if (str) {
                     console.log(str.toUpperCase());
                 }
-                function tr(buffer: Buffer, a: any, next: any) {
+
+                function transformInput(buffer: Buffer, enc: string, next: TransformCallback) {
                     this.push(buffer.toString().toUpperCase());
                     next();
                 }
-                process.stdin.pipe(through2(tr)).pipe(process.stdout);
+
+                process.stdin
+                    .pipe(through2(transformInput))
+                    .pipe(process.stdout);
             },
         },
         option: '-a, --action',

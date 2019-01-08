@@ -1,12 +1,11 @@
 import { config, helpConfig } from '../config/optionsConfig';
-import { errorMessages } from './constants';
-import { IStack } from './models';
+import { errorMessages, errorStatus } from './constants';
 
 export default class Parser {
     private args: string[];
     private errors: string[];
     private showHelp: boolean;
-    private stack: IStack;
+    private stack: any;
 
     constructor(args: string[]) {
         this.args = args.filter((arg) => arg !== '');
@@ -72,9 +71,9 @@ export default class Parser {
     }
 
     private validateOption(option: string, argument: string) {
-        if (/^(\-|\-\-)/.test(argument)) {
+        if (!argument || /^(\-|\-\-)/.test(argument)) {
             this.errors.push(errorMessages.getMissedArgumentError(option));
-            return 'error';
+            return errorStatus.error;
         }
 
         return argument;
@@ -86,12 +85,10 @@ export default class Parser {
         for (let item in config) {
             if (config.hasOwnProperty(item)) {
                 let option = this.args.forEach((element, index, array) => {
-                    if (config[item].option.split(',').includes(element)) {
+                    if (config[item].option.split(',').map((opt) => opt.trim()).includes(element)) {
                         options = {
                             ...options,
-                            [item]: array[index + 1]
-                                ? this.validateOption(item, array[index + 1])
-                                : '',
+                            [item]: this.validateOption(item, array[index + 1]),
                         };
                         optionsIndexes.push(index);
                         if (array[index + 1]) {
@@ -111,13 +108,15 @@ export default class Parser {
         }
 
         this.stack = options;
+
         if (this.stack.file) {
             this.validateFileName(this.stack.file);
         }
     }
 
     private validateFileName(fileName: string) {
-        if (!/\S*\.\S*$/.test(fileName)) {
+        console.log(fileName);
+        if (fileName !== errorStatus.error && !/\S*\.\S*$/.test(fileName)) {
             this.errors.push(errorMessages.getInvalidFileNameError(fileName));
         }
     }

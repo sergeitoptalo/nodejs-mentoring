@@ -3,3 +3,7 @@ export const errorMessages = {
     getMissedArgumentError: (option: string) => `Please check argument for ${option}`,
     getNoArgumentsError: () => `Please enter arguments`,
 };
+
+export const errorStatus = {
+    error: 'error',
+};

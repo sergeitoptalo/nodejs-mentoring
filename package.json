@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@types/through2": "^2.0.34",
+    "chalk": "^2.4.2",
     "csvjson": "^5.1.0",
     "through2": "^3.0.0"
   }

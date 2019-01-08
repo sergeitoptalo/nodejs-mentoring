@@ -44,7 +44,7 @@ export default class Importer {
         return importResult;
     }
 
-    public convertToJSON(data: Buffer) {
+    public convertToJSON(data: Buffer | string) {
         return csvjson.toObject(data);
     }
 }
