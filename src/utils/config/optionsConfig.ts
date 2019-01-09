@@ -34,7 +34,7 @@ export const config: IConfig = {
                 });
 
                 readable.on('error', () => {
-                    console.log(chalk.bgRed(errorMessages.noFileOrDir));
+                    console.log(chalk.bgRed(chalk.black(errorMessages.noFileOrDir)));
                 });
             },
             convertToFile: (path: string) => {
@@ -58,7 +58,7 @@ export const config: IConfig = {
                 });
 
                 writable.on('finish', () => {
-                    console.log(chalk.bgGreen(messages.fileWasCreated));
+                    console.log(chalk.bgGreen(chalk.black(messages.fileWasCreated)));
                 });
             },
             cssBundler: (path: string) => {
@@ -85,14 +85,18 @@ export const config: IConfig = {
                                         readAdditionalInfo.on('end', () => {
                                             writable.end();
                                             console.log(
-                                                chalk.bgGreenBright(messages.bundleSuccess),
+                                                chalk.bgGreenBright(
+                                                    chalk.black(messages.bundleSuccess),
+                                                ),
                                             );
                                         });
                                     }
                                 });
 
                                 readable.on('error', (error) => {
-                                    console.log(chalk.bgRed(errorMessages.noFileOrDir));
+                                    console.log(chalk.bgRed(
+                                        chalk.black(errorMessages.noFileOrDir),
+                                    ));
                                 });
                             });
                     })

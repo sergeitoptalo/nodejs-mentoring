@@ -116,7 +116,7 @@ export default class Parser {
 
     private validateFileName(fileName: string) {
         console.log(fileName);
-        if (fileName !== errorStatus.error && !/\S*\.\S*$/.test(fileName)) {
+        if (fileName !== errorStatus.error && !/\.\w*$/.test(fileName)) {
             this.errors.push(errorMessages.getInvalidFileNameError(fileName));
         }
     }
