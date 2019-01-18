@@ -19,7 +19,14 @@ const helpMessage: any = {
         example: '--action=reverse',
         full: '--action',
         shortcuted: '-a',
-        value: ['reverse', 'transform', 'transformToFile', 'cssBundler'],
+        value: [
+            'reverse',
+            'transform',
+            'outputFile',
+            'convertFromFile',
+            'convertToFile',
+            'cssBundler',
+        ],
 
     },
     file: {
