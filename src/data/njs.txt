@@ -1,0 +1,157 @@
+﻿Node.js streams have a reputation for being hard to work with, and even harder to understand. Well I’ve got good news for you — that’s no longer the case.
+
+Over the years, developers created lots of packages out there with the sole purpose of making working with streams easier. But in this article, I’m going to focus on the native Node.js stream API.
+
+“Streams are Node’s best and most misunderstood idea.”
+— Dominic Tarr
+What exactly are streams?
+Streams are collections of data — just like arrays or strings. The difference is that streams might not be available all at once, and they don’t have to fit in memory. This makes streams really powerful when working with large amounts of data, or data that’s coming from an external source one chunk at a time.
+
+However, streams are not only about working with big data. They also give us the power of composability in our code. Just like we can compose powerful linux commands by piping other smaller Linux commands, we can do exactly the same in Node with streams.
+
+
+Composability with Linux commands
+const grep = ... // A stream for the grep output
+const wc = ... // A stream for the wc input
+grep.pipe(wc)
+Many of the built-in modules in Node implement the streaming interface:
+
+
+Screenshot captured from my Pluralsight course — Advanced Node.js
+The list above has some examples for native Node.js objects that are also readable and writable streams. Some of these objects are both readable and writable streams, like TCP sockets, zlib and crypto streams.
+
+Notice that the objects are also closely related. While an HTTP response is a readable stream on the client, it’s a writable stream on the server. This is because in the HTTP case, we basically read from one object (http.IncomingMessage) and write to the other (http.ServerResponse).
+
+Also note how the stdio streams (stdin, stdout, stderr) have the inverse stream types when it comes to child processes. This allows for a really easy way to pipe to and from these streams from the main process stdio streams.
+
+A streams practical example
+Theory is great, but often not 100% convincing. Let’s see an example demonstrating the difference streams can make in code when it comes to memory consumption.
+
+Let’s create a big file first:
+
+const fs = require('fs');
+const file = fs.createWriteStream('./big.file');
+
+for(let i=0; i<= 1e6; i++) {
+  file.write('Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n');
+}
+
+file.end();
+Look what I used to create that big file. A writable stream!
+
+The fs module can be used to read from and write to files using a stream interface. In the example above, we’re writing to that big.file through a writable stream 1 million lines with a loop.
+
+Running the script above generates a file that’s about ~400 MB.
+
+Here’s a simple Node web server designed to exclusively serve the big.file:
+
+const fs = require('fs');
+const server = require('http').createServer();
+
+server.on('request', (req, res) => {
+  fs.readFile('./big.file', (err, data) => {
+    if (err) throw err;
+  
+    res.end(data);
+  });
+});
+
+server.listen(8000);
+When the server gets a request, it’ll serve the big file using the asynchronous method, fs.readFile. But hey, it’s not like we’re blocking the event loop or anything. Every thing is great, right? Right?
+
+Well, let’s see what happens when we run the server, connect to it, and monitor the memory while doing so.
+
+When I ran the server, it started out with a normal amount of memory, 8.7 MB:
+
+
+Then I connected to the server. Note what happened to the memory consumed:
+
+
+Wow — the memory consumption jumped to 434.8 MB.
+
+We basically put the whole big.file content in memory before we wrote it out to the response object. This is very inefficient.
+
+The HTTP response object (res in the code above) is also a writable stream. This means if we have a readable stream that represents the content of big.file, we can just pipe those two on each other and achieve mostly the same result without consuming ~400 MB of memory.
+
+Node’s fs module can give us a readable stream for any file using the createReadStream method. We can pipe that to the response object:
+
+const fs = require('fs');
+const server = require('http').createServer();
+
+server.on('request', (req, res) => {
+  const src = fs.createReadStream('./big.file');
+  src.pipe(res);
+});
+
+server.listen(8000);
+Now when you connect to this server, a magical thing happens (look at the memory consumption):
+
+
+What’s happening?
+
+When a client asks for that big file, we stream it one chunk at a time, which means we don’t buffer it in memory at all. The memory usage grew by about 25 MB and that’s it.
+
+You can push this example to its limits. Regenerate the big.file with five million lines instead of just one million, which would take the file to well over 2 GB, and that’s actually bigger than the default buffer limit in Node.
+
+If you try to serve that file using fs.readFile, you simply can’t, by default (you can change the limits). But with fs.createReadStream, there is no problem at all streaming 2 GB of data to the requester, and best of all, the process memory usage will roughly be the same.
+
+Ready to learn streams now?
+
+This article is a write-up of part of my Pluralsight course about Node.js. I cover similar content in video format there.
+Streams 101
+There are four fundamental stream types in Node.js: Readable, Writable, Duplex, and Transform streams.
+
+A readable stream is an abstraction for a source from which data can be consumed. An example of that is the fs.createReadStream method.
+A writable stream is an abstraction for a destination to which data can be written. An example of that is the fs.createWriteStream method.
+A duplex streams is both Readable and Writable. An example of that is a TCP socket.
+A transform stream is basically a duplex stream that can be used to modify or transform the data as it is written and read. An example of that is the zlib.createGzip stream to compress the data using gzip. You can think of a transform stream as a function where the input is the writable stream part and the output is readable stream part. You might also hear transform streams referred to as “through streams.”
+All streams are instances of EventEmitter. They emit events that can be used to read and write data. However, we can consume streams data in a simpler way using the pipe method.
+
+The pipe method
+Here’s the magic line that you need to remember:
+
+readableSrc.pipe(writableDest)
+In this simple line, we’re piping the output of a readable stream — the source of data, as the input of a writable stream — the destination. The source has to be a readable stream and the destination has to be a writable one. Of course, they can both be duplex/transform streams as well. In fact, if we’re piping into a duplex stream, we can chain pipe calls just like we do in Linux:
+
+readableSrc
+  .pipe(transformStream1)
+  .pipe(transformStream2)
+  .pipe(finalWrtitableDest)
+The pipe method returns the destination stream, which enabled us to do the chaining above. For streams a (readable), b and c (duplex), and d (writable), we can:
+
+a.pipe(b).pipe(c).pipe(d)
+# Which is equivalent to:
+a.pipe(b)
+b.pipe(c)
+c.pipe(d)
+# Which, in Linux, is equivalent to:
+$ a | b | c | d
+The pipe method is the easiest way to consume streams. It’s generally recommended to either use the pipe method or consume streams with events, but avoid mixing these two. Usually when you’re using the pipe method you don’t need to use events, but if you need to consume the streams in more custom ways, events would be the way to go.
+
+Stream events
+Beside reading from a readable stream source and writing to a writable destination, the pipe method automatically manages a few things along the way. For example, it handles errors, end-of-files, and the cases when one stream is slower or faster than the other.
+
+However, streams can also be consumed with events directly. Here’s the simplified event-equivalent code of what the pipe method mainly does to read and write data:
+
+# readable.pipe(writable)
+readable.on('data', (chunk) => {
+  writable.write(chunk);
+});
+readable.on('end', () => {
+  writable.end();
+});
+Here’s a list of the important events and functions that can be used with readable and writable streams:
+
+
+Screenshot captured from my Pluralsight course - Advanced Node.js
+The events and functions are somehow related because they are usually used together.
+
+The most important events on a readable stream are:
+
+The data event, which is emitted whenever the stream passes a chunk of data to the consumer
+The end event, which is emitted when there is no more data to be consumed from the stream.
+The most important events on a writable stream are:
+
+The drain event, which is a signal that the writable stream can receive more data.
+The finish event, which is emitted when all data has been flushed to the underlying system.
+Events and functions can be combined to make for a custom and optimized use of streams. To consume a readable stream, we can use the pipe/unpipe methods, or the read/unshift/resume methods. To consume a writable stream, we can make it the destination of pipe/unpipe, or just write to it with the write method and call the end method when we’re done.
