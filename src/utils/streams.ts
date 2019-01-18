@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import Parser from './argumentsParser';
-import { helpMessage } from './config/constants';
+import { getHelpMessage } from './config/constants';
 import { config } from './config/optionsConfig';
 import { IParsedArgs } from './models';
 
@@ -15,7 +15,7 @@ if (args.errors) {
 }
 
 if (args.showHelp) {
-    console.table(helpMessage);
+    getHelpMessage();
 }
 
 if (!args.errors && !args.showHelp) {
