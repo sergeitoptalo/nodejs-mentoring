@@ -7,6 +7,7 @@
     "start": "nodemon ./dist/app.js",
     "build": "tsc",
     "lint": "tslint -c ./tslint.json 'src/**/*.ts'",
+    "server": "node dist/http-servers/plain-text-server.js",
     "test": ""
   },
   "nodemonConfig": {
