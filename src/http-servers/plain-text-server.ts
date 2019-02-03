@@ -11,7 +11,7 @@ server.on('request', (req, res) => {
     res.end('Hello World');
 });
 
-server.listen(3000, (error: Error) => {
+server.listen(port, (error: Error) => {
     if (error) {
         console.log(error);
     }
