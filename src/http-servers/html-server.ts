@@ -1,5 +1,5 @@
-import http from 'http';
 import fs from 'fs';
+import http from 'http';
 
 const port = 3000;
 const server = http.createServer();
@@ -17,10 +17,9 @@ server.on('request', (req, res) => {
             .readFileSync('./src/http-servers/index.html', {encoding: 'UTF-8'})
             .toString()
             .replace('{message}', message);
-    }
-    catch (error) {
+    } catch (error) {
         console.log(error);
-        res.write('Please try again later')
+        res.write('Please try again later');
     }
 
     res.end(markup);
