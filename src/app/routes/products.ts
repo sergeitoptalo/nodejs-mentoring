@@ -1,11 +1,13 @@
 import express from 'express';
 import fs from 'fs';
 import { promisify } from 'util';
+import { productsDataPath } from '../config/constants';
+import { IProduct } from '../models/product.model';
 
 const productRouter = express.Router();
 
 productRouter.param('id', (req, res, next, id) => {
-    const readable = fs.createReadStream('./src/app/data/products.json');
+    const readable = fs.createReadStream(productsDataPath);
     const writeAsync = promisify(fs.writeFile);
     let data: any = [];
 
@@ -14,49 +16,77 @@ productRouter.param('id', (req, res, next, id) => {
     });
 
     readable.on('end', () => {
-        console.log(data);
-        data = data[0].map((product: any) => product.id === id
-            ? { ...product, reviews: product.reviews ? ++product.reviews : 1 }
-            : product,
-        );
+        try {
+            data = data[0].map((product: IProduct) => product.id === id
+                ? { ...product, reviews: product.reviews ? ++product.reviews : 1 }
+                : product,
+            );
+        } catch (error) {
+            res.write('Please try again later');
+        }
 
         if (req.path.includes('review')) {
-            const requiredProduct = data.filter((product: any) => product.id === id)[0];
-            req.reviews = requiredProduct.reviews
-                ? { reviews: requiredProduct.reviews }
-                : { reviews: 0 };
-            next();
+            try {
+                const requiredProduct = data.filter((product: IProduct) => product.id === id)[0];
+                req.reviews = requiredProduct.reviews
+                    ? { reviews: requiredProduct.reviews }
+                    : { reviews: 0 };
+                next();
+            } catch (error) {
+                res.write('Please try again later');
+            }
         } else {
-            req.productById = data.filter((product: any, index: any) => product.id === id)[0];
-            writeAsync('./src/app/data/products.json', JSON.stringify(data))
-                .then(() => {
-                    next();
-                });
+            req.productById = data.filter((product: IProduct) => product.id === id)[0];
+
+            try {
+                writeAsync(productsDataPath, JSON.stringify(data))
+                    .then(() => {
+                        next();
+                    });
+            } catch (error) {
+                res.write('Please try again later');
+            }
         }
     });
 });
 
 productRouter.route('/')
     .get((req, res) => {
-        const readable = fs.createReadStream('./src/app/data/products.json');
-        readable.pipe(res);
+        let readable;
+
+        try {
+            readable = fs.createReadStream(productsDataPath);
+            readable.pipe(res);
+        } catch (error) {
+            res.write('Please try again later');
+        }
     })
     .post((req, res) => {
-        const readable = fs.createReadStream('./src/app/data/products.json');
-        const writeAsync = promisify(fs.writeFile);
-        let data: any = [];
+        let readable;
 
-        readable.on('data', (chunk) => {
-            data.push(JSON.parse(chunk));
-        });
+        try {
+            readable = fs.createReadStream(productsDataPath);
+            const writeAsync = promisify(fs.writeFile);
+            let data: IProduct[][] = [];
 
-        readable.on('end', () => {
-            data[0].push(req.body);
-            writeAsync('./src/app/data/products.json', JSON.stringify(data[0]))
-                .then(() => {
-                    res.json(req.body);
-                });
-        });
+            readable.on('data', (chunk) => {
+                data.push(JSON.parse(chunk));
+            });
+
+            readable.on('end', () => {
+                data[0].push(req.body);
+                try {
+                    writeAsync(productsDataPath, JSON.stringify(data[0]))
+                        .then(() => {
+                            res.json(req.body);
+                        });
+                } catch {
+                    res.write('Please try again later');
+                }
+            });
+        } catch (error) {
+            res.write('Data can not be added, please contact support');
+        }
     });
 
 productRouter.get('/:id', (req, res) => {

@@ -1,9 +1,11 @@
 import express from 'express';
+import fs from 'fs';
 
 const userRouter = express.Router();
 
 userRouter.get('/', (req, res) => {
-    res.json({ status: 'user ok' });
+    const readable = fs.createReadStream('./src/app/data/users.json');
+    readable.pipe(res);
 });
 
 export default userRouter;
