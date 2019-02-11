@@ -36,8 +36,7 @@ productRouter.param('id', (req, res, next, id) => {
                 res.write('Please try again later');
             }
         } else {
-            req.productById = data.filter((product: IProduct) => product.id === id)[0];
-
+            //req.productById = data.filter((product: IProduct) => product.id === id)[0];
             try {
                 writeAsync(productsDataPath, JSON.stringify(data))
                     .then(() => {
@@ -90,7 +89,14 @@ productRouter.route('/')
     });
 
 productRouter.get('/:id', (req, res) => {
-    res.json(req.productById);
+    const readFileAsync = promisify(fs.readFile);
+    readFileAsync(productsDataPath)
+        .then((data) =>
+            JSON.parse(data.toString())
+                .filter((product: IProduct) => product.id === req.params.id)[0])
+        .then((productById) => {
+            res.json(productById);
+        })
 });
 
 productRouter.get('/:id/reviews', (req, res) => {

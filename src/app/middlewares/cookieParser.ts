@@ -1,9 +1,9 @@
-import express, { NextFunction } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 
 const cookieParser = (): any => (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
+    req: Request,
+    res: Response,
+    next: NextFunction,
 ) => {
     const cookies = req.headers.cookie;
 
