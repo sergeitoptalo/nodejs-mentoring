@@ -28,9 +28,11 @@ productRouter.param('id', (req, res, next, id) => {
         if (req.path.includes('review')) {
             try {
                 const requiredProduct = data.filter((product: IProduct) => product.id === id)[0];
-                req.reviews = requiredProduct.reviews
-                    ? { reviews: requiredProduct.reviews }
-                    : { reviews: 0 };
+                req.body = {
+                    reviews: requiredProduct.reviews
+                        ? requiredProduct.reviews
+                        : 0,
+                };
                 next();
             } catch (error) {
                 res.write('Please try again later');
@@ -99,7 +101,7 @@ productRouter.get('/:id', (req, res) => {
 });
 
 productRouter.get('/:id/reviews', (req, res) => {
-    res.json(req.reviews);
+    res.json(req.body);
 });
 
 export default productRouter;

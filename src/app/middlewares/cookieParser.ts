@@ -7,7 +7,7 @@ const cookieParser = (): any => (
 ) => {
     const cookies = req.headers.cookie;
 
-    req.parsedCookies = cookies;
+    req.cookies = cookies;
     next();
 };
 
