@@ -1,10 +1,12 @@
 [
     {
-        "id": "1",
-        "name": "user1"
+        "email": "user1@homework5.com",
+        "username": "user1",
+        "password": "pass1*"
     },
     {
-        "id": "2",
-        "name": "user2"
+        "email": "user2@homework5.com",
+        "username": "user2",
+        "password": "pass1*"
     }
 ]
