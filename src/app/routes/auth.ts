@@ -23,7 +23,7 @@ authRouter.post('/', (req, res) => {
                     sub: validatedUser.email,
                 };
 
-                let token = jwt.sign(payload, 'secret', { expiresIn: 200 });
+                let token = jwt.sign(payload, 'secret', { expiresIn: 7200 });
                 const response = {
                     code: statusCode.success,
                     data: {
