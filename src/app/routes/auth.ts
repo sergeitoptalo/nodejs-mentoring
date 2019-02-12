@@ -1,4 +1,5 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import { promisify } from 'util';
 import { statusCode, userDataPath } from '../config/constants';
@@ -18,6 +19,11 @@ authRouter.post('/', (req, res) => {
                     user.email === req.body.login && user.password === req.body.password)[0];
 
             if (validatedUser) {
+                let payload = {
+                    "sub": validatedUser.email,
+                };
+
+                let token = jwt.sign(payload, 'secret', { expiresIn: 200 });
                 const response = {
                     code: statusCode.success,
                     data: {
@@ -27,6 +33,7 @@ authRouter.post('/', (req, res) => {
                         },
                     },
                     message: 'OK',
+                    token,
                 };
                 res.json(response);
             } else {
