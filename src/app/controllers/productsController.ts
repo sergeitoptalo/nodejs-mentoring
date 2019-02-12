@@ -7,18 +7,15 @@ class ProductController {
     public getAllProducts() {
         return new Promise((resolve, reject) => {
             const readFileAsync = promisify(readFile);
-
             try {
                 const data = readFileAsync(productsDataPath)
                     .then((products: Buffer) => {
                         resolve(JSON.parse(products.toString()));
                     });
-
             } catch (error) {
                 reject(error);
             }
         });
-
     }
 
     public getProductById(productId: string) {
@@ -36,7 +33,6 @@ class ProductController {
                     return productsWithUpdatedReviews
                         .filter((product: IProduct) => product.id === productId)[0];
                 })
-
                 .then((product) => {
                     resolve(product);
                 })
