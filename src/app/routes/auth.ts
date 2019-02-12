@@ -1,6 +1,6 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
 import fs from 'fs';
+import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
 import { statusCode, userDataPath } from '../config/constants';
 import { IUser } from '../models/user.model';
@@ -20,7 +20,7 @@ authRouter.post('/', (req, res) => {
 
             if (validatedUser) {
                 let payload = {
-                    "sub": validatedUser.email,
+                    sub: validatedUser.email,
                 };
 
                 let token = jwt.sign(payload, 'secret', { expiresIn: 200 });
