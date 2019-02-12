@@ -29,9 +29,7 @@ productRouter.param('id', (req, res, next, id) => {
             try {
                 const requiredProduct = data.filter((product: IProduct) => product.id === id)[0];
                 req.body = {
-                    reviews: requiredProduct.reviews
-                        ? requiredProduct.reviews
-                        : 0,
+                    reviews: requiredProduct.reviews || 0,
                 };
                 next();
             } catch (error) {
