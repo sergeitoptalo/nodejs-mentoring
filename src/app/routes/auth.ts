@@ -1,53 +1,39 @@
 import express from 'express';
-import fs from 'fs';
 import jwt from 'jsonwebtoken';
-import { promisify } from 'util';
-import { statusCode, userDataPath } from '../config/constants';
-import { IUser } from '../models/user.model';
+import passport from 'passport';
+import { statusCode } from '../config/constants';
 
 const authRouter = express.Router();
 
-authRouter.post('/', (req, res) => {
-    const readFileAsync = promisify(fs.readFile);
-    let userIsValid = false;
-    let validatedUser = null;
+authRouter.post('/', passport.authenticate('local'/* , { session: false } */), (req, res) => {
+    const user = req.user;
 
-    const userData = readFileAsync(userDataPath)
-        .then((users) => {
-            validatedUser = JSON.parse(users.toString())
-                .filter((user: IUser) =>
-                    user.email === req.body.login && user.password === req.body.password)[0];
+    if (user) {
+        let payload = {
+            sub: user.email,
+        };
+        let token = jwt.sign(payload, 'secret'/* , { expiresIn: 10 } */);
 
-            if (validatedUser) {
-                let payload = {
-                    sub: validatedUser.email,
-                };
+        const response = {
+            code: statusCode.success,
+            data: {
+                user: {
+                    email: user.email,
+                    username: user.username,
+                },
+            },
+            message: 'OK',
+            token,
+        };
+        res.json(response);
+    } else {
+        const response = {
+            code: statusCode.notFound,
+            message: 'Not Found',
+        };
 
-                let token = jwt.sign(payload, 'secret', { expiresIn: 7200 });
-                const response = {
-                    code: statusCode.success,
-                    data: {
-                        user: {
-                            email: validatedUser.email,
-                            username: validatedUser.username,
-                        },
-                    },
-                    message: 'OK',
-                    token,
-                };
-                res.json(response);
-            } else {
-                const response = {
-                    code: statusCode.notFound,
-                    message: 'Not Found',
-                };
-
-                res.json(response);
-            }
-        })
-        .catch((error) => {
-            res.end('Please try again later');
-        });
+        res.json(response);
+    }
 });
 
 export default authRouter;

@@ -2,7 +2,9 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
 export const checkToken = (req: Request, res: Response, next: NextFunction) => {
-    if (req.path !== '/auth/') {
+    if (req.path.includes('auth')) {
+        next();
+    } else {
         let token: any = req.headers['x-access-token'];
 
         if (token) {
@@ -16,7 +18,5 @@ export const checkToken = (req: Request, res: Response, next: NextFunction) => {
         } else {
             res.status(403).json({ success: false, message: 'No token provided' });
         }
-    } else {
-        next();
     }
 };
