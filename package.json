@@ -7,6 +7,11 @@
     "start": "nodemon ./dist/app.js",
     "build": "tsc",
     "lint": "tslint -c ./tslint.json 'src/**/*.ts'",
+    "echo-server": "node dist/http-servers/echo-server.js",
+    "text-server": "node dist/http-servers/plain-text-server.js",
+    "html-server": "node dist/http-servers/html-server.js",
+    "json-server": "node dist/http-servers/json-server.js",
+    "express-app": "node dist/app/index.js",
     "test": ""
   },
   "nodemonConfig": {
@@ -38,9 +43,13 @@
     "typescript": "^3.1.6"
   },
   "dependencies": {
+    "@types/cookie-parser": "^1.4.1",
+    "@types/express": "^4.16.1",
     "@types/through2": "^2.0.34",
     "chalk": "^2.4.2",
+    "cookie-parser": "^1.4.3",
     "csvjson": "^5.1.0",
+    "express": "^4.16.4",
     "through2": "^3.0.0"
   }
 }
