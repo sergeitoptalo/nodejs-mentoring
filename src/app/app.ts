@@ -1,6 +1,7 @@
 import express from 'express';
 import passport from 'passport';
-import './config/passport.config';
+import './config/passport-facebook.config';
+import './config/passport-local.config';
 import cookieParser from './middlewares/cookieParser';
 import { checkToken } from './middlewares/jwtParser';
 import queryParser from './middlewares/queryParser';

@@ -1,39 +1,32 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
 import passport from 'passport';
-import { statusCode } from '../config/constants';
+import authController from '../controllers/auth.controller';
 
 const authRouter = express.Router();
 
-authRouter.post('/', passport.authenticate('local'/* , { session: false } */), (req, res) => {
-    const user = req.user;
+authRouter.post('/', passport.authenticate(
+    'local',
+    /*{ session: false } */
+),
+    (req, res) => {
+        authController.authenticateUser(req.user)
+            .then((authenticatedUser) => {
+                res.status(200).json(authenticatedUser);
+            })
+            .catch((error) => {
+                res.status(404).json({ message: 'Not found' });
+            });
+    });
 
-    if (user) {
-        let payload = {
-            sub: user.email,
-        };
-        let token = jwt.sign(payload, 'secret'/* , { expiresIn: 10 } */);
-
-        const response = {
-            code: statusCode.success,
-            data: {
-                user: {
-                    email: user.email,
-                    username: user.username,
-                },
-            },
-            message: 'OK',
-            token,
-        };
-        res.json(response);
-    } else {
-        const response = {
-            code: statusCode.notFound,
-            message: 'Not Found',
-        };
-
-        res.json(response);
-    }
-});
+authRouter.get('/facebook', passport.authenticate('facebook'),
+    (req, res) => {
+        authController.authenticateUser(req.user)
+            .then((authenticatedUser) => {
+                res.status(200).json(authenticatedUser);
+            })
+            .catch((error) => {
+                res.status(404).json({ message: 'Not found' });
+            });
+    });
 
 export default authRouter;
