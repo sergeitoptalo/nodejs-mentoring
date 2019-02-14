@@ -1,18 +1,15 @@
 import passport from 'passport';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
+import { authCallbacks, authId, authSecret } from './constants';
 
 passport.use(new FacebookStrategy({
-    callbackURL: 'http://localhost:8080/auth/facebook/callback',
-    clientID: /* FACEBOOK_APP_ID */'2292029254389675',
-    clientSecret: /* FACEBOOK_APP_SECRET */'9fab1e039ee9865eea433b4b19e3f585',
+    callbackURL: authCallbacks.facebook,
+    clientID: authId.facebook,
+    clientSecret: authSecret.facebook,
+    profileFields: ['id', 'emails', 'name'],
 },
     (accessToken, refreshToken, profile, done) => {
-        /* User.findOrCreate(..., function (err, user) {
-            if (err) { return done(err); }
-            done(null, user);
-        }); */
-        let a = accessToken;
-        let b = refreshToken;
-        let c = profile;
+        const user = { username: profile.displayName, email: profile.emails[0].value };
+        done(null, user);
     },
 ));
