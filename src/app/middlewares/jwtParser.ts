@@ -5,7 +5,7 @@ export const checkToken = (req: Request, res: Response, next: NextFunction) => {
     if (req.path.includes('auth')) {
         next();
     } else {
-        let token: any = req.headers['x-access-token'];
+        let token: string = req.headers['x-access-token'] as string;
 
         if (token) {
             jwt.verify(token, 'secret', (error: any, decoded: any) => {
