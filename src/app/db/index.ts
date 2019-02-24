@@ -1,10 +1,6 @@
-import Sequelize from 'sequelize';
-//import User from './models/user';
-import { moveDataToDb } from './helpers/moveDataToDb';
-import { IUser } from '../models/user.model';
 import db from './models';
 
-//const sq = new Sequelize('postgres://postgres:123@localhost:5432/homework06');
+// const sq = new Sequelize('postgres://postgres:123@localhost:5432/homework06');
 /* const User = sq.import('./models/user');
 const Product = sq.import('./models/product'); */
 
@@ -23,9 +19,6 @@ export const connectToDatabase = () => {
                 }); */
         })
         .catch((error: any) => {
-            console.log(error)
+            console.log(error);
         });
-}
-
-
-
+};

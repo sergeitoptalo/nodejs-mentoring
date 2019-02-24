@@ -1,7 +1,5 @@
-import sequelize = require("sequelize");
 import fs from 'fs';
 import { promisify } from 'util';
-
 
 export const moveDataToDb = (filePath: string, Model: any) => {
     const readFileAsync = promisify(fs.readFile);
@@ -14,17 +12,17 @@ export const moveDataToDb = (filePath: string, Model: any) => {
                     Model.findOrCreate({ where: item, defaults: item })
                         .spread((user: any, created: any) => {
                             console.log(user.get({
-                                plain: true
+                                plain: true,
                             }));
                             console.log(created);
                         })
                         .then(() => {
                             resolve('Done');
-                        })
-                })
+                        });
+                });
             })
             .catch((error) => {
-                reject(error)
+                reject(error);
             });
-    })
-}
+    });
+};

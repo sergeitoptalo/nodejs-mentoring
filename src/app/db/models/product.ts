@@ -1,13 +1,13 @@
-import { Sequelize, DataTypes } from 'sequelize';
+import { DataTypes as IDataTypes, Sequelize } from 'sequelize';
 
-module.exports = (sequelize: Sequelize, DataTypes: DataTypes) => {
+module.exports = (sequelize: Sequelize, DataTypes: IDataTypes) => {
   const Product = sequelize.define('Product', {
-    title: DataTypes.STRING,
     description: DataTypes.STRING,
     price: DataTypes.STRING,
-    reviews: DataTypes.DECIMAL(10, 2)
+    reviews: DataTypes.DECIMAL(10, 2),
+    title: DataTypes.STRING,
   }, {});
-  Product.associate = function (models) {
+  Product.associate = (models) => {
     // associations can be defined here
   };
   return Product;

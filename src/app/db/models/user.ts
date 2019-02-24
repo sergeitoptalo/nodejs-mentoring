@@ -1,12 +1,12 @@
-import { Sequelize, DataTypes } from 'sequelize';
+import { DataTypes as IDataTypes, Sequelize } from 'sequelize';
 
-export default (sequelize: Sequelize, DataTypes: DataTypes) => {
+export default (sequelize: Sequelize, DataTypes: IDataTypes) => {
   const User = sequelize.define('User', {
-    username: DataTypes.STRING,
+    email: DataTypes.STRING,
     password: DataTypes.STRING,
-    email: DataTypes.STRING
+    username: DataTypes.STRING,
   }, {});
-  User.associate = function (models) {
+  User.associate = (models) => {
     // associations can be defined here
   };
   return User;

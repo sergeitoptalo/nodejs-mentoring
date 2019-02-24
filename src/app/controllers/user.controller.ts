@@ -1,8 +1,8 @@
 import fs from 'fs';
 import { promisify } from 'util';
 import { userDataPath } from '../config/constants';
-import { IUser } from '../models/user.model';
 import db from '../db/models';
+import { IUser } from '../models/user.model';
 
 class UserController {
     public getAllUsers() {
@@ -27,8 +27,8 @@ class UserController {
                 })
                 .catch((error: any) => {
                     reject(error);
-                })
-        })
+                });
+        });
     }
 }
 
