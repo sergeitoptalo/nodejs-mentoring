@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/app.js",
   "scripts": {
-    "start": "nodemon ./dist/app.js",
+    "start": "npm run express-app",
+    "start2": "nodemon ./dist/app.js",
     "build": "tsc",
     "lint": "tslint -c ./tslint.json 'src/**/*.ts'",
     "echo-server": "node dist/http-servers/echo-server.js",
