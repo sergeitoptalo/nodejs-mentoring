@@ -1,6 +1,8 @@
 import fs from 'fs';
 import { promisify } from 'util';
 import { userDataPath } from '../config/constants';
+import { IUser } from '../models/user.model';
+import db from '../db/models';
 
 class UserController {
     public getAllUsers() {
@@ -15,6 +17,18 @@ class UserController {
                     reject(error);
                 });
         });
+    }
+
+    public getUserByEmail(email: string) {
+        return new Promise((resolve, reject) => {
+            db.User.findOne(({ where: { email } }))
+                .then((user: IUser) => {
+                    resolve(user);
+                })
+                .catch((error: any) => {
+                    reject(error);
+                })
+        })
     }
 }
 
