@@ -2,7 +2,7 @@ import db from './models';
 
 // const sq = new Sequelize('postgres://postgres:123@localhost:5432/homework06');
 /* const User = sq.import('./models/user');
-const Product = sq.import('./models/product'); */
+const Product = sq.import('./models/product');  */
 
 export const connectToDatabase = () => {
     return db.sequelize.authenticate()
