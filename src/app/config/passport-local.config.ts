@@ -10,7 +10,7 @@ passport.use(new LocalStategy({
 }, (login, password, done) => {
     userController.getAllUsers()
         .then((users: IUser[]) => {
-            const validatedUser = users.filter((user) => user.email === login)[0];
+            const validatedUser = users.find((user) => user.email === login);
             if (!validatedUser || validatedUser.password !== password) {
                 done(null, false, { message: 'Incorrect credentials' });
             } else {
