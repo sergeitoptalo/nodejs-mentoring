@@ -8,7 +8,8 @@ passport.use(new LocalStategy({
     session: false,
     usernameField: 'login',
 }, (login, password, done) => {
-    userController.getUserByEmail(login)
+    userController
+        .getUserByEmail(login)
         .then((user: IUser) => {
             if (!user || user.password !== password) {
                 done(null, false, { message: 'Incorrect credentials' });
