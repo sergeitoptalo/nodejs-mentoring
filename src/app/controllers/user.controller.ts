@@ -20,15 +20,9 @@ class UserController {
     }
 
     public getUserByEmail(email: string) {
-        return new Promise((resolve, reject) => {
-            db.User.findOne(({ where: { email } }))
-                .then((user: IUser) => {
-                    resolve(user);
-                })
-                .catch((error: any) => {
-                    reject(error);
-                });
-        });
+        db.User.findOne(({ where: { email } }))
+            .then((user: IUser) => user)
+            .catch((error: any) => error);
     }
 }
 
