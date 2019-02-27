@@ -1,16 +1,16 @@
 import fs from 'fs';
-import { Sequelize } from 'sequelize';
+import Sequelize from 'sequelize';
 
-const path = require('path');
-const Sequelize = require('sequelize');
+import path from 'path';
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
+const configPath = path.join(__dirname, '../');
+const config = require(configPath + '\config\\config.json')[env];
 const db: any = {};
 
-let sequelize: Sequelize = config.use_env_variable
+let sequelize = config.use_env_variable
   ? new Sequelize(process.env[config.use_env_variable], config)
-  : new Sequelize('postgres://postgres:123@localhost:5432/homework06');
+  : new Sequelize(config);
 
 fs
   .readdirSync(__dirname)

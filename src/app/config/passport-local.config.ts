@@ -8,7 +8,7 @@ passport.use(new LocalStategy({
     session: false,
     usernameField: 'login',
 }, (login, password, done) => {
-    userController
+    return userController
         .getUserByEmail(login)
         .then((user: IUser) => {
             if (!user || user.password !== password) {
@@ -17,7 +17,7 @@ passport.use(new LocalStategy({
                 done(null, user);
             }
         })
-        .catch((error) => {
+        .catch((error: Error) => {
             console.log(error);
         });
 }));

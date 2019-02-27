@@ -1,19 +1,19 @@
 import db from './models';
-
-// const sq = new Sequelize('postgres://postgres:123@localhost:5432/homework06');
-/* const User = sq.import('./models/user');
-const Product = sq.import('./models/product');  */
+// import { moveDataToDb } from './helpers/moveDataToDb';
 
 export const connectToDatabase = () => {
+    /* const User = db.sequelize.import('./models/user');
+    const Product = db.sequelize.import('./models/product'); */
+
     return db.sequelize.authenticate()
         .then(() => {
             console.log('Connected to database');
 
-            /* moveDataToDb('./src/app/data/users.json', User)
+            /* moveDataToDb('./nodejs-mentoring/src/app/data/users.json', User)
                 .then((data) => {
                     console.log(data);
-                }); */
-            /* moveDataToDb('./src/app/data/products.json', Product)
+                });
+            moveDataToDb('./nodejs-mentoring/src/app/data/products.json', Product)
                 .then((data) => {
                     console.log(data);
                 }); */

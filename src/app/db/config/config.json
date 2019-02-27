@@ -4,7 +4,7 @@
     "password": 123,
     "database": "homework06",
     "host": "localhost",
-    "dialect": "mysql",
+    "dialect": "postgres",
     "port": "5432"
   },
   "test": {

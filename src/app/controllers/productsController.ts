@@ -1,23 +1,22 @@
-import fs, { readFile } from 'fs';
-import { promisify } from 'util';
-import { productsDataPath } from '../config/constants';
 import db from '../db/models';
 import { IProduct } from '../models/product.model';
 
 class ProductController {
     public getAllProducts() {
-        db.Product.findAll()
+        return db.Product.findAll()
             .then((products: IProduct[]) => products)
             .catch((error: Error) => error);
     }
 
     public getProductById(productId: string, updateReviews: boolean = true) {
-        const writeAsync = promisify(fs.writeFile);
-
-        return db.Product.findOne({ where: { id: +productId } })
+        return db.Product.findOne({ where: { id: parseInt(productId, 10) } })
             .then((product: any) => {
                 if (product && updateReviews) {
-                    product.update({ reviews: product.reviews ? +product.reviews + 1 : 1 });
+                    product.update({
+                        reviews: product.reviews
+                            ? parseInt(product.reviews, 10) + 1
+                            : 1,
+                    });
                 }
                 return product;
             })
@@ -25,7 +24,7 @@ class ProductController {
     }
 
     public getProductReviews(productId: string) {
-        this.getProductById(productId, false)
+        return this.getProductById(productId, false)
             .then((product: IProduct) => {
                 if (product) {
                     return product.reviews;
@@ -37,14 +36,8 @@ class ProductController {
     }
 
     public addNewProduct(newProduct: IProduct) {
-        const writeAsync = promisify(fs.writeFile);
-
-        db.Product.findOrCreate({ where: newProduct, defaults: newProduct })
+        return db.Product.findOrCreate({ where: newProduct, defaults: newProduct })
             .spread((product: any, created: any) => {
-                console.log(product.get({
-                    plain: true,
-                }));
-                console.log(created);
                 if (created) {
                     return product;
                 } else {

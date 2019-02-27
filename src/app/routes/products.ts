@@ -1,5 +1,6 @@
 import express from 'express';
 import productsController from '../controllers/productsController';
+import { IProduct } from '../models/product.model';
 
 const productRouter = express.Router();
 
@@ -12,20 +13,20 @@ productRouter.route('/')
     .get((req, res) => {
         productsController
             .getAllProducts()
-            .then((data) => {
-                res.status(200).json(data);
+            .then((products: IProduct[]) => {
+                res.status(200).json(products);
             })
-            .catch((error) => {
+            .catch((error: Error) => {
                 res.status(404).json({ error });
             });
     })
     .post((req, res) => {
         productsController
             .addNewProduct(req.body)
-            .then((addedProduct) => {
+            .then((addedProduct: IProduct) => {
                 res.status(200).json(addedProduct);
             })
-            .catch((error) => {
+            .catch((error: Error) => {
                 res.status(500).json({ error });
             });
     });
@@ -33,22 +34,22 @@ productRouter.route('/')
 productRouter.get('/:id', (req, res) => {
     productsController
         .getProductById(req.body.productId)
-        .then((product) => {
+        .then((product: IProduct) => {
             res.status(200).json(product);
         })
-        .catch((error) => {
+        .catch((error: Error) => {
             res.status(404).json({ error });
         });
 });
 
 productRouter.get('/:id/reviews', (req, res) => {
     productsController.getProductReviews(req.body.productId)
-        .then((reviews: number) => {
-            res.status(200).json({ reviews });
-        })
-        .catch((error) => {
-            res.status(404).json(({ error }));
-        });
+    .then((reviews: number) => {
+         res.status(200).json({ reviews });
+     })
+     .catch((error: Error) => {
+         res.status(404).json(({ error }));
+     });
 });
 
 export default productRouter;
