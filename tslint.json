@@ -5,6 +5,8 @@
         "max-line-length": [true, 100],
         "no-console": [false],
         "no-namespace": [true, "allow-declarations"],
+        "no-string-literal": false,
+        "no-var-requires": false,
         "no-unused-expression": [true, "allow-new"],
         "ordered-imports": true,
         "quotemark": [true, "single", "jsx-double"],
