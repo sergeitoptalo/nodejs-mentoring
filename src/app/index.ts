@@ -3,7 +3,9 @@ import { connectToDatabase } from './db';
 
 const port = process.env.PORT || 8080;
 
-connectToDatabase()
+/* connectToDatabase()
     .then(() => {
         app.listen(port, () => console.log(`App listening on port ​${port}​!`));
-    });
+    }); */
+
+app.listen(port, () => console.log(`App listening on port ​${port}​!`));
