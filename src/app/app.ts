@@ -7,6 +7,7 @@ import './config/passport-local.config';
 import './config/passport-twitter.config';
 import cookieParser from './middlewares/cookieParser';
 import { checkToken } from './middlewares/jwtParser';
+import { modifiedDateSetter } from './middlewares/modifiedDateSetter';
 import queryParser from './middlewares/queryParser';
 import routes from './routes';
 
@@ -23,6 +24,7 @@ app.use(session({
   }));
 app.use(passport.initialize());
 app.use(checkToken);
+app.use(modifiedDateSetter);
 
 app.use(routes);
 

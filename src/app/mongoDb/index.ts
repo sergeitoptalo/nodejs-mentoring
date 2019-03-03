@@ -1,21 +1,25 @@
 import { MongoClient } from 'mongodb';
 import mongoose from 'mongoose';
-import { cityModel } from './models/city.model';
+import { moveDataToMongoDb } from './helpers/moveDataToMongoDb';
+import { Product, User } from './models';
 
-mongoose.connect(connectionString);
+const connectionString =
+    'mongodb+srv://mongoUser:111@cluster0-syndd.mongodb.net/homework-07?retryWrites=true';
 
-const db = mongoose.connection;
+mongoose.connect(connectionString, { useNewUrlParser: true });
+
+export const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
     console.log('Connected to database');
+    moveDataToMongoDb({
+        Product,
+        User,
+    })
+        .then(() => {
+            console.log('Data moved');
+        });
 });
-
-const Schema = mongoose.Schema;
-
-const citySchema = new Schema(cityModel);
-const City = mongoose.model('City', citySchema);
-
-export default City;
 
 /*
 --- MongoDB native driver

@@ -1,5 +1,6 @@
 import app from './app';
 import { connectToDatabase } from './db';
+import './mongoDb';
 
 const port = process.env.PORT || 8080;
 
