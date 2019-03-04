@@ -1,7 +1,7 @@
 import express from 'express';
 import fs from 'fs';
 import userController from '../controllers/user.controller';
-import { IUser } from '../models/user.model';
+import { IUserDocument } from '../models/user.model';
 
 const userRouter = express.Router();
 
@@ -13,7 +13,7 @@ userRouter.param('id', (req, res, next, id) => {
 userRouter.get('/', (req, res) => {
     userController
         .getAllUsers()
-        .then((users: any) => {
+        .then((users: IUserDocument[]) => {
             res.status(200).json(users);
         })
         .catch((error: Error) => {

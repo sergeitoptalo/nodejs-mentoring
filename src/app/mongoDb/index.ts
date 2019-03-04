@@ -8,7 +8,7 @@ const connectionString =
 
 mongoose.connect(connectionString, { useNewUrlParser: true });
 
-export const db = mongoose.connection;
+const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
     console.log('Connected to database');
@@ -20,6 +20,8 @@ db.once('open', () => {
             console.log('Data moved');
         });
 });
+
+export { db };
 
 /*
 --- MongoDB native driver

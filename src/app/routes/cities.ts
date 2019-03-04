@@ -1,6 +1,6 @@
 import express from 'express';
 import cityController from '../controllers/city.controller';
-import { ICity } from '../models/city.model';
+import { ICityDocument } from '../models/city.model';
 
 const cityRouter = express.Router();
 
@@ -14,7 +14,7 @@ cityRouter
     .get((req, res) => {
         cityController
             .getAllCities()
-            .then((cities) => {
+            .then((cities: ICityDocument[]) => {
                 res.status(200).json(cities);
             })
             .catch((error: Error) => {
@@ -24,7 +24,7 @@ cityRouter
     .post((req, res) => {
         cityController
             .addNewCity(req.body)
-            .then((city) => {
+            .then((city: ICityDocument) => {
                 res.status(200).json(city);
             })
             .catch((error: Error) => {
@@ -37,7 +37,7 @@ cityRouter
     .put((req, res) => {
         cityController
             .updateCity(req.body.cityId, req.body)
-            .then((city) => {
+            .then((city: ICityDocument) => {
                 res.status(200).json(city);
             })
             .catch((error: Error) => {
@@ -58,7 +58,7 @@ cityRouter
 cityRouter.get('/random', (req, res) => {
     cityController
         .getRandomCity()
-        .then((city: ICity[]) => {
+        .then((city: ICityDocument) => {
             res.status(200).json(city);
         })
         .catch((error: Error) => {

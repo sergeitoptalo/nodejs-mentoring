@@ -1,6 +1,6 @@
 import express from 'express';
 import productsController from '../controllers/productsController';
-import { IProduct } from '../models/product.model';
+import { IProductDocument } from '../models/product.model';
 
 const productRouter = express.Router();
 
@@ -13,7 +13,7 @@ productRouter.route('/')
     .get((req, res) => {
         productsController
             .getAllProducts()
-            .then((products: any[]) => {
+            .then((products: IProductDocument[]) => {
                 res.status(200).json(products);
             })
             .catch((error: Error) => {
@@ -23,7 +23,7 @@ productRouter.route('/')
     .post((req, res) => {
         productsController
             .addNewProduct(req.body)
-            .then((addedProduct: any) => {
+            .then((addedProduct: IProductDocument) => {
                 res.status(200).json(addedProduct);
             })
             .catch((error: Error) => {
@@ -36,7 +36,7 @@ productRouter
     .get((req, res) => {
         productsController
             .getProductById(req.body.productId)
-            .then((product: any) => {
+            .then((product: IProductDocument) => {
                 res.status(200).json(product);
             })
             .catch((error: Error) => {
