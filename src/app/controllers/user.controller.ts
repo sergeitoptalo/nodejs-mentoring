@@ -1,17 +1,34 @@
+import { MongoError } from 'mongodb';
 import db from '../db/models';
-import { IUser } from '../models/user.model';
+import { IUser, IUserDocument } from '../models/user.model';
+import { User } from '../mongoDb/models';
 
 class UserController {
     public getAllUsers() {
-        return db.User.findAll()
+        return User.find({})
+            .then((users: IUserDocument[]) => users)
+            .catch((error: MongoError) => error.message);
+        /* return db.User.findAll()
             .then((users: IUser[]) => users)
-            .catch((error: Error) => error);
+            .catch((error: Error) => error); */
     }
 
     public getUserByEmail(email: string) {
-        return db.User.findOne(({ where: { email } }))
+        return User.findOne({ email })
+            .then((user: IUserDocument) => user)
+            .catch((error) => error);
+        /* return db.User.findOne(({ where: { email } }))
             .then((user: IUser) => user)
-            .catch((error: any) => error);
+            .catch((error: any) => error); */
+    }
+
+    public deleteUser(userId: string) {
+        return User.deleteOne({ userId: parseInt(userId, 10) }, (error: MongoError) => {
+            if (error) {
+                return error;
+            }
+            return 'Removed';
+        });
     }
 }
 

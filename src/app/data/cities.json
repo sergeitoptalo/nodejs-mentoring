@@ -1,0 +1,42 @@
+[
+    {
+        "cityId": 1,
+        "name": "Brest",
+        "country": "Belarus",
+        "capital": false,
+        "location": {
+            "lat": 52.097621,
+            "long": 23.73405
+        }
+    },
+    {
+        "cityId": 2,
+        "name": "Edinburgh",
+        "country": "Scotland ",
+        "capital": true,
+        "location": {
+            "lat": 55.953251,
+            "long": -3.188267
+        }
+    },
+    {
+        "cityId": 3,
+        "name": "Wellington",
+        "country": "New Zealand",
+        "capital": true,
+        "location": {
+            "lat": -41.286461,
+            "long": 174.77623
+        }
+    },
+    {
+        "cityId": 4,
+        "name": "Melbourne",
+        "country": "Australia",
+        "capital": false,
+        "location": {
+            "lat": -37.813629,
+            "long": 144.963058
+        }
+    }
+]

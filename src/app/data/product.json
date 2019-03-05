@@ -1,20 +1,20 @@
 [
     {
-        "id": 1,
+        "productId": 1,
         "price": "99.99",
         "reviews": 2,
         "title": "Product 1",
         "description": "Product 1 description"
     },
     {
-        "id": 2,
+        "productId": 2,
         "price": "95.99",
         "reviews": 3,
         "title": "Product 2",
         "description": "Product 2 description"
     },
     {
-        "id": 3,
+        "productId": 3,
         "price": "92.99",
         "reviews": 2,
         "title": "Product 3",

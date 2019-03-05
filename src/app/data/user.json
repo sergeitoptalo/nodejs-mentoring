@@ -1,13 +1,13 @@
 [
     {
         "email": "user1@homework5.com",
-        "id": 1,
+        "userId": "1",
         "username": "user1",
         "password": "pass1*"
     },
     {
         "email": "user2@homework5.com",
-        "id": 2,
+        "userId": "2",
         "username": "user2",
         "password": "pass1*"
     }
