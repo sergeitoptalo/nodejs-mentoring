@@ -1,5 +1,9 @@
+import { Document } from 'mongoose';
+
 export interface IProduct {
-    id: string;
+    productId: number;
     price: string;
     reviews?: number;
 }
+
+export interface IProductDocument extends IProduct, Document {}
