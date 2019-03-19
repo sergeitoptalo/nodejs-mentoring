@@ -13,7 +13,11 @@
     "html-server": "node dist/http-servers/html-server.js",
     "json-server": "node dist/http-servers/json-server.js",
     "express-app": "node dist/app/index.js",
-    "test": ""
+    "test": "",
+    "sw-create": "swagger project create swagger-hw08",
+    "sw-edit": "swagger project edit swagger-hw08",
+    "sw-start": "swagger project start swagger-hw08",
+    "sw-generate-html": "pretty-swag -i ./swagger-hw08/api/swagger/swagger.yaml"
   },
   "nodemonConfig": {
     "watch": [
@@ -76,8 +80,11 @@
     "passport-twitter": "^1.0.4",
     "pg": "^7.8.1",
     "pg-hstore": "^2.3.2",
+    "pretty-swag": "^0.2.2",
     "sequelize": "^4.42.0",
     "sequelize-cli": "^5.4.0",
+    "swagger": "^0.7.5",
+    "swagger-editor": "^3.6.25",
     "through2": "^3.0.0"
   }
 }

@@ -1,0 +1,13 @@
+{
+    "input": "./api/swagger/swagger.yaml",
+    "output": "./public/index.html",
+    "format": "singlefile",
+    "markdown": true,
+    "theme": {
+      "default": "blue",
+      "GET": "blue",
+      "POST": "indigo",
+      "DELETE": "red",
+      "PUT": "amber"
+    }
+  }
