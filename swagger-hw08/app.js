@@ -42,4 +42,4 @@ buildUI()
         });
     });
 
-module.exports = app; // for testing
+module.exports = app;
