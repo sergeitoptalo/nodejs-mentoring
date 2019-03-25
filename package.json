@@ -13,10 +13,10 @@
     "json-server": "node dist/http-servers/json-server.js",
     "express-app": "node dist/app/index.js",
     "test": "",
-    "sw-create": "swagger project create swagger-hw08",
-    "sw-edit": "swagger project edit swagger-hw08",
-    "sw-start": "swagger project start swagger-hw08",
-    "sw-generate-html": "pretty-swag -i ./swagger-hw08/api/swagger/swagger.yaml"
+    "swagger-create": "swagger project create swagger-hw08",
+    "swagger-edit": "swagger project edit swagger-hw08",
+    "swagger-start": "swagger project start swagger-hw08",
+    "swagger-generate-html": "pretty-swag -i ./swagger-hw08/api/swagger/swagger.yaml"
   },
   "nodemonConfig": {
     "watch": [
@@ -91,6 +91,7 @@
     "sequelize-cli": "^5.4.0",
     "swagger": "^0.7.5",
     "swagger-editor": "^3.6.25",
+    "swagger-express-mw": "^0.7.0",
     "through2": "^3.0.0"
   }
 }

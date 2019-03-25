@@ -17,7 +17,7 @@ const buildUI = () => new Promise((resolve, reject) => {
             console.log(err);
         }
         else {
-            console.log("UI ready");
+            console.log("UI is generated");
             resolve();
         }
     });

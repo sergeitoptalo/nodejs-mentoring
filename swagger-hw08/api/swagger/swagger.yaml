@@ -54,6 +54,7 @@ paths:
         404:
           description: User not found
   /api/users:
+    x-swagger-router-controller: user.controller
     get:
       tags:
       - users
@@ -90,6 +91,7 @@ paths:
         404:
           description: User not found
   /api/products:
+    x-swagger-router-controller: products.controller
     get:
       tags:
       - products
