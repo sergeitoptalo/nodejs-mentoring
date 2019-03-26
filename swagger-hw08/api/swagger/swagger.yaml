@@ -1,0 +1,394 @@
+swagger: '2.0'
+info:
+  description: |
+    Homework 8
+  version: 1.0.0
+  title: Swagger Homework 8
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+# host: petstore.swagger.io
+# basePath: /v2
+tags:
+- name: auth
+  description: Authentication routes
+- name: users
+  description: Users registered in the application
+- name: products
+  description: Operations with products
+- name: cities
+  description: Collection of cities
+# schemes:
+# - http
+paths:
+  /auth:
+    post:
+      tags:
+      - auth
+      summary: Login
+      operationId: login
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Credentials for authentication
+        required: true
+        schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Authentication success
+          schema:
+            $ref: '#/definitions/LoginResponse'
+        404:
+          description: User not found
+  /api/users:
+    x-swagger-router-controller: user.controller
+    get:
+      tags:
+      - users
+      summary: Get all users
+      description: Returns array of users
+      operationId: getAllUsers
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        200:
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+  /api/users/{userId}:
+    delete:
+      tags:
+      - users
+      summary: Delete user by id
+      operationId: deleteUser
+      produces:
+      - application/json
+      parameters:
+      - name: userId
+        in: path
+        description: User Id
+        required: true
+        type: string
+      responses:
+        200:
+          description: Success
+        404:
+          description: User not found
+  /api/products:
+    x-swagger-router-controller: products.controller
+    get:
+      tags:
+      - products
+      summary: Get all products
+      operationId: getAllProducts
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        200:
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Product'
+    post:
+      tags:
+      - products
+      summary: Add new product
+      operationId: addNewProduct
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: New product
+        required: true
+        schema:
+          $ref: '#/definitions/NewProduct'
+      responses:
+        200:
+          description: Success
+        500:
+          description: Error
+  /api/products/{productId}:
+    get:
+      tags:
+      - products
+      summary: Get single product by id
+      operationId: getProductById
+      produces:
+      - application/json
+      parameters:
+      - name: productId
+        in: path
+        description: Product Id
+        required: true
+        type: string
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Product'
+        404:
+          description: Product not found
+    delete:
+      tags:
+      - products
+      summary: Delete product by id
+      operationId: deleteProductById
+      produces:
+      - application/json
+      parameters:
+      - name: productId
+        in: path
+        description: Product Id
+        required: true
+        type: string
+      responses:
+        200:
+          description: Success
+  /api/products/{productId}/reviews:
+    get:
+      tags:
+      - products
+      summary: Get single product reviews
+      operationId: getProductReviews
+      produces:
+      - application/json
+      parameters:
+      - name: productId
+        in: path
+        description: Product Id
+        required: true
+        type: string
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/ProductReviews'
+        404:
+          description: Product not found
+  /api/cities:
+    get:
+      tags:
+      - cities
+      summary: Get all cities
+      operationId: getAllCities
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        200:
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/City'
+    post:
+      tags:
+      - cities
+      summary: Add new city
+      operationId: addNewCity
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: New city
+        required: true
+        schema:
+          $ref: '#/definitions/NewCity'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/City'
+  /api/cities/{cityId}:
+    put:
+      tags:
+      - cities
+      summary: Update city by id
+      operationId: updateCityById
+      produces:
+      - application/json
+      parameters:
+      - name: cityId
+        in: path
+        description: City Id
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: Updated city
+        schema:
+          $ref: '#/definitions/NewCity'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/City'
+        404:
+          description: City not found
+    delete:
+      tags:
+      - cities
+      summary: Delete city by id
+      operationId: deleteCityById
+      produces:
+      - application/json
+      parameters:
+      - name: cityId
+        in: path
+        description: City Id
+        required: true
+        type: string
+      responses:
+        200:
+          description: Success
+        404:
+          description: City not found
+  /api/cities/random:
+    get:
+      tags:
+      - cities
+      summary: Get random city
+      operationId: getRandomCity
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/City'
+definitions:
+  LoginResponse:
+    type: object
+    properties:
+      code: 
+        type: integer
+        format: int64
+      data:
+        type: object
+        properties:
+          user:
+            type: object
+            properties:
+              email:
+                type: string
+              username:
+                type: string
+      message: 
+        type: string
+      token:
+        type: string
+  User:
+    type: object
+    properties:
+      email:
+        type: string
+      userId:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+  Product:
+    type: object
+    properties:
+      productId:
+        type: integer
+        format: int64
+      price:
+        type: integer
+        format: int64
+      reviews:
+        type: integer
+        format: int64
+      title:
+        type: string
+      description:
+        type: string
+  NewProduct:
+    type: object
+    properties:
+      price:
+        type: integer
+        format: int64
+      title:
+        type: string
+      description:
+        type: string
+  ProductReviews:
+    type: object
+    properties:
+      reviews:
+        type: integer
+        format: int64
+  City:
+    type: object
+    properties:
+      capital:
+        type: boolean
+      cityId:
+        type: integer
+        format: int64
+      country:
+        type: string
+      lastModifiedDate:
+        type: string
+        format: date-time
+      location: 
+        type: object
+        properties:
+          lat:
+            type: integer
+            format: int64
+          long:
+            type: integer
+            format: int64
+      name:
+        type: string
+  NewCity:
+    type: object
+    properties:
+      capital:
+        type: boolean
+      country:
+        type: string
+      location: 
+        type: object
+        properties:
+          lat:
+            type: integer
+            format: int64
+          long:
+            type: integer
+            format: int64
+      name:
+        type: string
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+# Added by API Auto Mocking Plugin
+host: localhost:10010
+basePath: /
+schemes:
+ - https
+ - http
